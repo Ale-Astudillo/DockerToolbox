@@ -1,0 +1,164 @@
+*****************************************************************************************
+*	  		Universidad Laica Eloy Alfaro de Manabí				*
+*	               Facultad Ciencias de la Vida y Tecnología			*
+*											*
+*			    Tecnologías de la Información				*
+*****************************************************************************************
+
+
+
+*****************	  Enlaces de Referencia y Apoyo		*****************
+
+Install Docker Toolbox on Windows
+	https://docs.docker.com.xy2401.com/toolbox/toolbox_install_windows/
+	https://github.com/docker-archive/toolbox/releases
+
+Resuelva el problema de que "Docker Quickstart Terminal" no se puede iniciar
+	https://programmerclick.com/article/57611800256/
+
+Creando un contenedor de MySQL en Docker y conectando remotamente
+	https://www.youtube.com/watch?v=F0sB22yF1cY
+
+Base de datos Oracle en Docker para el desarrollo
+	https://rmauro.dev/oracle-database-on-docker-for-development/
+
+Finalizada la instalación se puede visualizar la dirección IP que se nos asigna 192.168.99.100
+
+
+*****************	  Contenedor MySQL		*****************
+
+docker images
+docker-machine ls
+
+- Define el recursos del contenedor en tiempo de ejecución. Creando la imagen y asignamos el puerto donde se va a comunicar
+docker run -d -p 33060:3306 --name mysql-db -e MYSQL_ROOT_PASSWORD=secret mysql
+- comprobamos su creación
+docker images
+- ejecutamos e ingresamos a MySQL
+docker exec -it mysql-db mysql -p
+
+- Dentro de MySQL
+create database BDPRODUCTO;
+use BDPRODUCTO;
+create table PRODUCTO (ID_PRODUCTO varchar(10), DESCRIPCION varchar(20), COSTO numeric(7,2), PRECIO numeric(7,2));
+DESCRIBE PRODUCTO;
+insert into PRODUCTO values('1','Computdora',3,3);
+select * from PRODUCTO;
+exit
+
+- Verificamos existencia de Base de Datos y Tabla previamente creada
+show databases;
+use BDPRODUCTO;
+show tables;
+
+
+*****************	  Contenedor PostgreSQL		*****************
+
+- - Define el recursos del contenedor en tiempo de ejecución. Creando la imagen y asignamos el puerto donde se va a comunicar
+docker run -d -p 5432:5432 --name postgres-db  -e POSTGRES_PASSWORD=secret postgres:12
+- ejecutamos e ingresamos a PostgreSQL
+docker exec -it postgres-db psql -U postgres
+
+- Dentro de PostgreSQL
+-- Crear base de datos
+create database bdproducto;
+-- Mostrar las Base de Datos
+\l
+-- Conectarte a la base de datos
+\c bdproducto 
+create table producto(ID_PRODUCTO varchar(10), DESCRIPCION varchar(20), COSTO numeric(7,2), PRECIO numeric(7,2));
+insert into producto values('1','Computdora',3,3);
+select * from producto;
+
+
+*****************	  Contenedor Oracle 11		*****************
+- Sacar una imagen o un repositorio de un registro 
+docker pull oracleinanutshell/oracle-xe-11g
+- - Define el recursos del contenedor en tiempo de ejecución. Ejecuta la imagen mediante el reenvío de puertos
+docker run -d -p 49161:1521 oracleinanutshell/oracle-xe-11g
+- Obtenga el ID del contenedor en ejecución y adjúntelo en ejecución bash.
+docker exec -it 30 bash
+- Escribe sqlplus para abrir SQLPlus en la terminal. 
+sqlplus
+- Conéctese usando el nombre de usuario y la contraseña a continuación.
+	Database Information
+	- hostname: localhost
+	- internal port: 49161
+	- sid: xe
+	- username: system
+	- password: oracle
+
+- Conéctese usando SQL Developer 
+	Name: dkBDPRODUCTO
+
+	Usuario: system
+	Contraseñ: oracle
+
+	Nombre del Host: 192.168.99.100
+	Puerto: 49161
+	Sid: xe
+
+create table producto(ID_PRODUCTO varchar(10), DESCRIPCION varchar(20), COSTO numeric(7,2), PRECIO numeric(7,2));
+insert into producto values('1','Computdora',3,3);
+select * from producto;
+
+*****************	  Contenedor SQL Server		*****************
+- Sacar una imagen o un repositorio de un registro 
+docker pull mcr.microsoft.com/mssql/server:2017-latest
+docker images
+- Define el recursos del contenedor en tiempo de ejecución. Creando la imagen y asignamos el puerto donde se va a comunicar
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Secret01!" -e "MSSQL_PID=Express"  -p 1439:1433 -d --name=sqlserver mcr.microsoft.com/mssql/server:2017-latest
+docker ps -a
+docker exec -it sqlserver "bash"
+/opt/mssql-tools/bin/sqlcmd -S localhost -U SA 
+
+- Crear Base de Datos
+select name from sys.databases;
+go
+create database bdproducto;
+go
+use bdproducto;
+go
+create table producto(ID_PRODUCTO varchar(10), DESCRIPCION varchar(20), COSTO numeric(7,2), PRECIO numeric(7,2));
+go
+insert into producto values('1','Computdora',3,3);
+go
+select * from producto;
+go
+
+*****************	  Ver Errores en el Contenedor	*****************
+
+docker logs sqlserver
+- Tamaño de los Contenedores
+docker">docker run --rm -it -e COLUMNS=$COLUMNS -e LINES=$LINES -e TERM=$TERM -it ubuntu:16.04 tput lines
+
+*****************	  Detener Contenedor	*****************
+
+docker stop postgres-db
+- Retire uno o más contenedores 
+docker rm postgres-db
+
+- Detén todos los contenedores ejecutándose
+docker stop $(docker ps -a -q)
+- Elimina todos los contenedores detenidos
+docker rm $(docker ps -a -q)
+
+
+*****************	  Detener Imagen	*****************
+
+-Eliminar una o más imágenes 
+docker rmi 68f5d950dcd3
+
+- Elimina todas las imágenes de una vez.
+docker rmi $(docker imagenes -q)
+
+
+
+
+
+
+
+
+
+
+
